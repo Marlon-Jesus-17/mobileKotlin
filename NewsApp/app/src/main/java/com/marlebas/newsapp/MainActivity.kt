@@ -52,9 +52,6 @@ fun MinhaPrimeiraTela(viewModel: CounterViewModel = viewModel()){
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center){
 
-        Button(onClick = { viewModel.carregarPosts() }, enabled = !isLoading)
-        { Text("Buscar Posts") }
-
         when{
             isLoading -> {
                 Box(
@@ -67,10 +64,25 @@ fun MinhaPrimeiraTela(viewModel: CounterViewModel = viewModel()){
             error != null -> {
                 Box(modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center) {
-                    Text(error)
+                    Column(horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = error ?: "Erro desconhecido")
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Button(onClick = {
+                            viewModel.carregarPosts()
+                        }, enabled = !isLoading) {
+                            Text("Tentar novamente")
+                        }
+                    }
                 }
             }
              else -> {
+                 Column {
+                     Button(onClick = { viewModel.carregarPosts() }, enabled = !isLoading)
+                     { Text("Buscar Posts") }
+                 }
                 LazyColumn {
                     items (posts){
                             post -> PostItem(post)
