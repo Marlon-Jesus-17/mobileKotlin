@@ -48,14 +48,10 @@ fun MinhaPrimeiraTela(viewModel: CounterViewModel = viewModel()){
     Column (modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center){
-        Button(onClick = {
-            viewModel.carregarPosts()
-        }) {
-            Text("Buscar Posts")
-        }
-        if(isLoading){
-            Text("Carregando...")
-        }
+
+        Button(onClick = { viewModel.carregarPosts() }, enabled = !isLoading)
+        { Text(if (isLoading) "Carregando..." else "Buscar Posts") }
+
         LazyColumn {
             items (posts){
                 post -> PostItem(post)
