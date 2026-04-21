@@ -14,13 +14,20 @@ class CounterViewModel : ViewModel(){
     var isLoading = mutableStateOf(false)
         private set
 
+    var error = mutableStateOf<String?>(null)
+        private set
+
     fun carregarPosts(){
         viewModelScope.launch {
             try {
                 isLoading.value = true
+                error.value = null
+
                 val response = RetrofitIntance.api.getPosts()
                 posts.value = response
+
             } catch (e: Exception){
+                error.value = "Erro ao carregar dados"
                 e.printStackTrace()
             } finally {
                 isLoading.value = false

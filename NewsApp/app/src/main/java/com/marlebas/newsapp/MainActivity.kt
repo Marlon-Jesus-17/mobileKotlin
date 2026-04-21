@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,17 +46,36 @@ fun MinhaPrimeiraTela(viewModel: CounterViewModel = viewModel()){
 
     val posts = viewModel.posts.value
     val isLoading = viewModel.isLoading.value
+    val error = viewModel.error.value
 
     Column (modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center){
 
         Button(onClick = { viewModel.carregarPosts() }, enabled = !isLoading)
-        { Text(if (isLoading) "Carregando..." else "Buscar Posts") }
+        { Text("Buscar Posts") }
 
-        LazyColumn {
-            items (posts){
-                post -> PostItem(post)
+        when{
+            isLoading -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+            error != null -> {
+                Box(modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center) {
+                    Text(error)
+                }
+            }
+             else -> {
+                LazyColumn {
+                    items (posts){
+                            post -> PostItem(post)
+                    }
+                }
             }
         }
     }
