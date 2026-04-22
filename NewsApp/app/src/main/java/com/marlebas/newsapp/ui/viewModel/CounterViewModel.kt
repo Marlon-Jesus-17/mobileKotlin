@@ -1,38 +1,39 @@
 package com.marlebas.newsapp.ui.viewModel
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.marlebas.newsapp.data.Post
 import com.marlebas.newsapp.data.repository.NewsRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class CounterViewModel : ViewModel(){
-    var posts = mutableStateOf<List<Post>>(emptyList())
-        private set
+    private var _posts = MutableStateFlow<List<Post>>(emptyList())
+    val posts: StateFlow<List<Post>> = _posts
 
-    var isLoading = mutableStateOf(false)
-        private set
+    private var _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
 
-    var error = mutableStateOf<String?>(null)
-        private set
+    private var _error = MutableStateFlow<String?>(null)
+    val error: StateFlow<String?> = _error
 
     private val repository = NewsRepository()
 
     fun carregarPosts(){
         viewModelScope.launch {
             try {
-                isLoading.value = true
-                error.value = null
+                _isLoading.value = true
+                _error.value = null
 
                 val response = repository.getPosts()
-                posts.value = response
+                _posts.value = response
 
             } catch (e: Exception){
-                error.value = "Erro ao carregar dados"
+                _error.value = "Erro ao carregar dados"
                 e.printStackTrace()
             } finally {
-                isLoading.value = false
+                _isLoading.value = false
             }
         }
     }
