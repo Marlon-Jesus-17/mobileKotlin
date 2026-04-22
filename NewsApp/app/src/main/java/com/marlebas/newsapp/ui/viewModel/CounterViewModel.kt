@@ -4,7 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.marlebas.newsapp.data.Post
-import com.marlebas.newsapp.data.RetrofitIntance
+import com.marlebas.newsapp.data.repository.NewsRepository
 import kotlinx.coroutines.launch
 
 class CounterViewModel : ViewModel(){
@@ -17,13 +17,15 @@ class CounterViewModel : ViewModel(){
     var error = mutableStateOf<String?>(null)
         private set
 
+    private val repository = NewsRepository()
+
     fun carregarPosts(){
         viewModelScope.launch {
             try {
                 isLoading.value = true
                 error.value = null
 
-                val response = RetrofitIntance.api.getPosts()
+                val response = repository.getPosts()
                 posts.value = response
 
             } catch (e: Exception){
