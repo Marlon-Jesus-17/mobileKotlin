@@ -3,12 +3,12 @@ package com.marlebas.newsapp.ui.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.marlebas.newsapp.data.Post
-import com.marlebas.newsapp.data.repository.NewsRepository
+import com.marlebas.newsapp.data.repository.PostRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class CounterViewModel : ViewModel(){
+class PostViewModel : ViewModel(){
     private var _posts = MutableStateFlow<List<Post>>(emptyList())
     val posts: StateFlow<List<Post>> = _posts
 
@@ -18,7 +18,7 @@ class CounterViewModel : ViewModel(){
     private var _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
-    private val repository = NewsRepository()
+    private val repository = PostRepository()
 
     fun carregarPosts(){
         viewModelScope.launch {
