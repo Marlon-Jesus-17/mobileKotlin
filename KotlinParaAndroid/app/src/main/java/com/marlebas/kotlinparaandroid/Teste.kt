@@ -1,6 +1,6 @@
 package com.marlebas.kotlinparaandroid
 
-data class Filme(val nome: String, val nota: Double)
+data class Filme(val nome: String, val nota: Double, val favorito: Boolean = false)
 
 fun apresentar(): List<Filme>{
     val filmes = listOf(
@@ -9,12 +9,5 @@ fun apresentar(): List<Filme>{
         Filme("Dragon ball z", 9.7),
         Filme("Madagascar", 7.3)
     )
-
-    filmes.forEach { println(it.nome)}
-    val melhores = filmes.filter { it.nota > 9 }
-    melhores.forEach { it.nome }
-    val nomes = filmes.map { it.nome }
-    println(nomes)
-
     return filmes
 }
