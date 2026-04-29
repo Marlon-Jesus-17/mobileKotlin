@@ -16,11 +16,19 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -37,6 +45,7 @@ import com.marlebas.newsapp.ui.theme.NewsAppTheme
 import com.marlebas.newsapp.ui.viewModel.PostDetailViewModel
 import com.marlebas.newsapp.ui.viewModel.PostViewModel
 
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +58,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PostListScreen(navController: NavController, viewModel: PostViewModel = viewModel()){
 
@@ -56,59 +66,90 @@ fun PostListScreen(navController: NavController, viewModel: PostViewModel = view
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
 
-    Column (modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center){
-
-        when{
-            isLoading -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
-            error != null -> {
-                Box(modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(text = error ?: "Erro desconhecido")
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        Button(onClick = {
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = "News App",
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+                ),
+                actions = {
+                    IconButton(
+                        onClick = {
                             viewModel.carregarPosts()
-                        }, enabled = !isLoading) {
-                            Text("Tentar novamente")
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Refresh,
+                            contentDescription = "Atualizar"
+                        )
+                    }
+                }
+            )
+        }
+    ) { paddingValues ->
+
+        Column (modifier = Modifier.fillMaxSize()
+            .padding(paddingValues),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center){
+
+            when{
+                isLoading -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+                error != null -> {
+                    Box(modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(text = error ?: "Erro desconhecido")
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            Button(onClick = {
+                                viewModel.carregarPosts()
+                            }, enabled = !isLoading) {
+                                Text("Tentar novamente")
+                            }
                         }
                     }
                 }
-            }
-             else -> {
-                 if (posts.isEmpty()){
-                     Box(
-                         modifier = Modifier.fillMaxSize(),
-                         contentAlignment = Alignment.Center
-                     ){
-                         Button(
-                             onClick = {viewModel.carregarPosts()},
-                             enabled = !isLoading
-                         ) {
-                             Text("Buscar Posts")
-                         }
-                     }
-                 } else {
-                     LazyColumn {
-                         items (posts){
-                                 post -> PostItem(post){
-                             Log.d("NAV", "ID: ${post.id}")
-                             navController.navigate("detail/${post.id}")
-                             }
-                         }
-                     }
-                 }
+                else -> {
+                    if (posts.isEmpty()){
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ){
+                            Button(
+                                onClick = {viewModel.carregarPosts()},
+                                enabled = !isLoading
+                            ) {
+                                Text("Buscar Posts")
+                            }
+                        }
+                    } else {
+                        LazyColumn {
+                            items (posts){
+                                    post -> PostItem(post){
+                                Log.d("NAV", "ID: ${post.id}")
+                                navController.navigate("detail/${post.id}")
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
