@@ -15,6 +15,10 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,10 +36,15 @@ class MainActivity : ComponentActivity() {
                 items(filmes) { //Recebe o tipo dos itens
                     filme ->
 
+                    //by remember {mutableStateOf(false)} guarda um valor que muda na tela em tempo real
+                    var favorito by remember {
+                        mutableStateOf(false)
+                    }
+
                     // Card cria os cards onde as informações ficam dentro
                     Card(
                         onClick = { //torna o Card um botão que dispara uma ação quando clicado
-                            println(filme.nome)
+                            favorito = !favorito
                         },
                         elevation = CardDefaults.cardElevation(6.dp), //Cartão com sombra/destaque (altura visual do cartão)
                         modifier = Modifier //Controla a aparência/tamanho
@@ -58,7 +67,10 @@ class MainActivity : ComponentActivity() {
                                 filme.nota >= 8 -> Color.Yellow
                                 else -> Color.Red
                             }
-                            Text(text = "⭐ ${filme.nota}",
+                            Text(text = if (favorito)
+                                            "❤\uFE0F ${filme.nota}"
+                                        else
+                                            "\uD83E\uDD0D ${filme.nota}",
                                 fontSize = 18.sp,
                                 color = corNota)
                         }
