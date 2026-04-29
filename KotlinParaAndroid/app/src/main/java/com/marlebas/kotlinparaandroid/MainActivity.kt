@@ -4,7 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.marlebas.kotlinparaandroid.ui.theme.KotlinParaAndroidTheme
 
 class MainActivity : ComponentActivity() {
@@ -29,13 +32,21 @@ class MainActivity : ComponentActivity() {
 
                     // Card cria os cards onde as informações ficam dentro
                     Card(modifier = Modifier //Controla a aparência/tamanho
-                        .fillMaxWidth() //Ocupa espaço horizontal
-                        .padding(8.dp) //Tamanho da margem
+                        .fillMaxWidth() //Ocupa largura
+                        .padding(horizontal = 10.dp, vertical = 6.dp) //Tamanho da margem
                     ) {
-                        //Column estrutura os componentes em forma de colunas
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(text = filme.nome)
-                            Text(text = "Nota: ${filme.nota}")
+                        //Row organiza os itens horizontalmente, um ao lado do outro
+                        Row(
+                            modifier = Modifier.fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween //Joga um item para a esquerda e o outro para a direita, criando um espaço entre eles
+                        ) {
+                            //Column estrutura os componentes em forma de colunas
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text(text = filme.nome, fontSize = 20.sp)
+                                Text(text = "Filme avaliado")
+                            }
+                            Text(text = "⭐ ${filme.nota}", fontSize = 18.sp)
                         }
                     }
                 }
