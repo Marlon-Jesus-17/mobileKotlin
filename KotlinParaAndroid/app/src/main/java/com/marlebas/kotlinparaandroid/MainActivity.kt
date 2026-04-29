@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -32,7 +33,12 @@ class MainActivity : ComponentActivity() {
                     filme ->
 
                     // Card cria os cards onde as informações ficam dentro
-                    Card(modifier = Modifier //Controla a aparência/tamanho
+                    Card(
+                        onClick = { //torna o Card um botão que dispara uma ação quando clicado
+                            println(filme.nome)
+                        },
+                        elevation = CardDefaults.cardElevation(6.dp), //Cartão com sombra/destaque (altura visual do cartão)
+                        modifier = Modifier //Controla a aparência/tamanho
                         .fillMaxWidth() //Ocupa largura
                         .padding(horizontal = 10.dp, vertical = 6.dp) //Tamanho da margem
                     ) {
