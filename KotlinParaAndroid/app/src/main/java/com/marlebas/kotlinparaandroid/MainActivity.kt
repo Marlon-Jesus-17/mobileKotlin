@@ -17,6 +17,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -47,10 +48,19 @@ class MainActivity : ComponentActivity() {
                 mutableStateOf(false)
             }
 
-            val listaExibida = if(mostrarFavoritos){
-                filmes.filter { it.favorito }
-            }else{
-                filmes
+            var textoBusca by remember{
+                mutableStateOf("")
+            }
+
+            val listaExibida = filmes.filter { filme ->
+
+                val passouFavorito = !mostrarFavoritos || filme.favorito
+
+                val passouBusca = filme.nome.contains(
+                    textoBusca,
+                    ignoreCase = true
+                )
+                passouFavorito && passouBusca
             }
 
             Scaffold( //Serve para estruturar telas prontas(esqueleto de tela Android)
@@ -76,47 +86,60 @@ class MainActivity : ComponentActivity() {
             ) {
                 paddingValues ->
 
-                LazyColumn(modifier = Modifier.padding(paddingValues)){ //Cria uma lista
-                    items(listaExibida) { //Recebe a lista de itens
-                            filme ->
+                Column(modifier = Modifier.padding(paddingValues)) {
+                    TextField(
+                        value = textoBusca, //Mostra o texto atual
+                        onValueChange = { textoBusca = it }, //Sempre que digita algo Atualiza o estado
+                        label = {
+                            Text("Buscar filme")
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                    )
 
-                        // Card cria os cards onde as informações ficam dentro
-                        Card(
-                            onClick = { //torna o Card um botão que dispara uma ação quando clicado
-                                val index = filmes.indexOf(filme)
-                                filmes[index] = filme.copy(favorito = !filme.favorito)
-                            },
-                            elevation = CardDefaults.cardElevation(6.dp), //Cartão com sombra/destaque (altura visual do cartão)
-                            modifier = Modifier //Controla a aparência/tamanho
-                                .fillMaxWidth() //Ocupa largura
-                                .padding(horizontal = 10.dp, vertical = 6.dp) //Tamanho da margem
-                        ) {
-                            //Row organiza os itens horizontalmente, um ao lado do outro
-                            Row(
-                                modifier = Modifier.fillMaxWidth()
-                                    .padding(16.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween //Joga um item para a esquerda e o outro para a direita, criando um espaço entre eles
+                    LazyColumn(modifier = Modifier.weight(1f)){ //Cria uma lista
+                        items(listaExibida) { //Recebe a lista de itens
+                                filme ->
+
+                            // Card cria os cards onde as informações ficam dentro
+                            Card(
+                                onClick = { //torna o Card um botão que dispara uma ação quando clicado
+                                    val index = filmes.indexOf(filme)
+                                    filmes[index] = filme.copy(favorito = !filme.favorito)
+                                },
+                                elevation = CardDefaults.cardElevation(6.dp), //Cartão com sombra/destaque (altura visual do cartão)
+                                modifier = Modifier //Controla a aparência/tamanho
+                                    .fillMaxWidth() //Ocupa largura
+                                    .padding(horizontal = 10.dp, vertical = 6.dp) //Tamanho da margem
                             ) {
-                                //Column estrutura os componentes em forma de colunas
-                                Column(modifier = Modifier.padding(16.dp)) {
-                                    Text(text = filme.nome, fontSize = 20.sp)
-                                    Text(text = "Filme avaliado")
-                                }
-                                val corNota = when{
-                                    filme.nota >= 9 -> Color.Green
-                                    filme.nota >= 8 -> Color.Yellow
-                                    else -> Color.Red
-                                }
-                                Text(text = if (filme.favorito)
-                                    "❤\uFE0F ${filme.nota}"
-                                else
-                                    "\uD83E\uDD0D ${filme.nota}",
-                                    fontSize = 18.sp,
-                                    color = corNota)
+                                //Row organiza os itens horizontalmente, um ao lado do outro
+                                Row(
+                                    modifier = Modifier.fillMaxWidth()
+                                        .padding(16.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween //Joga um item para a esquerda e o outro para a direita, criando um espaço entre eles
+                                ) {
+                                    //Column estrutura os componentes em forma de colunas
+                                    Column(modifier = Modifier.padding(16.dp)) {
+                                        Text(text = filme.nome, fontSize = 20.sp)
+                                        Text(text = "Filme avaliado")
+                                    }
+                                    val corNota = when{
+                                        filme.nota >= 9 -> Color.Green
+                                        filme.nota >= 8 -> Color.Yellow
+                                        else -> Color.Red
+                                    }
+                                    Text(text = if (filme.favorito)
+                                        "❤\uFE0F ${filme.nota}"
+                                    else
+                                        "\uD83E\uDD0D ${filme.nota}",
+                                        fontSize = 18.sp,
+                                        color = corNota)
                                 }
                             }
                         }
                     }
+                }
             }
         }
     }
