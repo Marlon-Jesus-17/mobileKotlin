@@ -15,6 +15,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -46,7 +47,14 @@ class MainActivity : ComponentActivity() {
                                 Text(text = filme.nome, fontSize = 20.sp)
                                 Text(text = "Filme avaliado")
                             }
-                            Text(text = "⭐ ${filme.nota}", fontSize = 18.sp)
+                            val corNota = when{
+                                filme.nota >= 9 -> Color.Green
+                                filme.nota >= 8 -> Color.Yellow
+                                else -> Color.Red
+                            }
+                            Text(text = "⭐ ${filme.nota}",
+                                fontSize = 18.sp,
+                                color = corNota)
                         }
                     }
                 }
