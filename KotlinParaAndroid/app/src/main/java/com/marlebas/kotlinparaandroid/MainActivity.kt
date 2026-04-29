@@ -23,14 +23,16 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         val filmes = apresentar()
         setContent {
-            LazyColumn{
-                items(filmes) {
+            LazyColumn{ //Cria a lista de itens
+                items(filmes) { //Recebe o tipo dos itens
                     filme ->
 
-                    Card(modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
+                    // Card cria os cards onde as informações ficam dentro
+                    Card(modifier = Modifier //Controla a aparência/tamanho
+                        .fillMaxWidth() //Ocupa espaço horizontal
+                        .padding(8.dp) //Tamanho da margem
                     ) {
+                        //Column estrutura os componentes em forma de colunas
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(text = filme.nome)
                             Text(text = "Nota: ${filme.nota}")
