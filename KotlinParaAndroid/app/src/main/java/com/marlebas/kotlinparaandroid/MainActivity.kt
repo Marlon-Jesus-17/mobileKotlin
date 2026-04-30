@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -63,6 +64,10 @@ class MainActivity : ComponentActivity() {
                 passouFavorito && passouBusca
             }
 
+            var filmeSelecionado by remember{
+                mutableStateOf<Filme?>(null)
+            }
+
             Scaffold( //Serve para estruturar telas prontas(esqueleto de tela Android)
                 topBar = { //Área superior da tela, normalmente: título, ações, menu...
                     TopAppBar( //Barra pronta, Material Design
@@ -86,32 +91,39 @@ class MainActivity : ComponentActivity() {
             ) {
                 paddingValues ->
 
-                Column(modifier = Modifier.padding(paddingValues)) {
-                    TextField(
-                        value = textoBusca, //Mostra o texto atual
-                        onValueChange = { textoBusca = it }, //Sempre que digita algo Atualiza o estado
-                        label = {
-                            Text("Buscar filme")
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
-                    )
+                if(filmeSelecionado == null){
 
-                    LazyColumn(modifier = Modifier.weight(1f)){ //Cria uma lista
-                        items(listaExibida) { //Recebe a lista de itens
-                                filme ->
+                    Column(modifier = Modifier.padding(paddingValues)) {
+                        TextField(
+                            value = textoBusca, //Mostra o texto atual
+                            onValueChange = { textoBusca = it }, //Sempre que digita algo Atualiza o estado
+                            label = {
+                                Text("Buscar filme")
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp)
+                        )
 
-                            MovieCard(filme = filme,
-                                onClick = {
-                                    val index = filmes.indexOf(filme)
-                                    filmes[index] = filme.copy(
-                                        favorito = !filme.favorito
-                                    )
-                                }
-                            )
+                        LazyColumn(modifier = Modifier.weight(1f)){ //Cria uma lista
+                            items(listaExibida) { //Recebe a lista de itens
+                                    filme ->
+
+                                MovieCard(filme = filme,
+                                    onClick = {
+                                        filmeSelecionado = filme
+                                    }
+                                )
+                            }
                         }
                     }
+
+                }else{
+
+                    MovieDetailScreen(filme = filmeSelecionado!!,
+                        onVoltar = {filmeSelecionado = null},
+                        paddingValues = paddingValues
+                    )
                 }
             }
         }
@@ -152,6 +164,29 @@ fun MovieCard(filme: Filme, onClick: () -> Unit){
                 fontSize = 18.sp,
                 color = corNota)
         }
+    }
+}
+
+@Composable
+fun MovieDetailScreen(filme: Filme, onVoltar: () -> Unit, paddingValues: PaddingValues){
+
+    Column(
+        modifier = Modifier.fillMaxWidth().padding(paddingValues).padding(16.dp)
+    ) {
+        Text(text = filme.nome, fontSize = 26.sp)
+        Text(text = "Nota: ${filme.nota}", fontSize = 20.sp)
+        Text(text =
+        if(filme.favorito)
+            "Favorito ❤\uFE0F"
+        else
+            "Não favorito \uD83E\uDD0D")
+        Text(text = "← Voltar", modifier = Modifier
+            .padding(top = 20.dp)
+            .clickable{
+                onVoltar()
+            },
+            fontSize = 18.sp
+        )
     }
 }
 
