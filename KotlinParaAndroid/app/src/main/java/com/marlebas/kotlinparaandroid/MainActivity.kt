@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -13,9 +14,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -26,12 +31,11 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.marlebas.kotlinparaandroid.ui.theme.KotlinParaAndroidTheme
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -66,6 +70,13 @@ class MainActivity : ComponentActivity() {
 
             var filmeSelecionado by remember{
                 mutableStateOf<Filme?>(null)
+            }
+
+            fun favoritarFilme(filme: Filme){
+                val index = filmes.indexOf(filme)
+                filmes[index] = filme.copy(
+                    favorito = !filme.favorito
+                )
             }
 
             Scaffold( //Serve para estruturar telas prontas(esqueleto de tela Android)
@@ -112,6 +123,9 @@ class MainActivity : ComponentActivity() {
                                 MovieCard(filme = filme,
                                     onClick = {
                                         filmeSelecionado = filme
+                                    },
+                                    onFavoritar = {
+                                        favoritarFilme(filme)
                                     }
                                 )
                             }
@@ -122,6 +136,15 @@ class MainActivity : ComponentActivity() {
 
                     MovieDetailScreen(filme = filmeSelecionado!!,
                         onVoltar = {filmeSelecionado = null},
+                        onFavoritar = {
+                            val index = filmes.indexOf(filmeSelecionado!!)
+                            filmes[index] = filmeSelecionado!!.copy(
+                                favorito = !filmeSelecionado!!.favorito
+                            )
+
+                            //atualiza na tela de detalhes
+                            filmeSelecionado = filmes[index]
+                        },
                         paddingValues = paddingValues
                     )
                 }
@@ -131,11 +154,12 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MovieCard(filme: Filme, onClick: () -> Unit){
+fun MovieCard(filme: Filme, onClick: () -> Unit, onFavoritar: () -> Unit){
 
     // Card cria os cards onde as informações ficam dentro
     Card(
         onClick = onClick, //torna o Card um botão que dispara uma ação quando clicado
+        enabled = true,
         elevation = CardDefaults.cardElevation(6.dp), //Cartão com sombra/destaque (altura visual do cartão)
         modifier = Modifier //Controla a aparência/tamanho
             .fillMaxWidth() //Ocupa largura
@@ -157,18 +181,40 @@ fun MovieCard(filme: Filme, onClick: () -> Unit){
                 filme.nota >= 8 -> Color.Yellow
                 else -> Color.Red
             }
-            Text(text = if (filme.favorito)
-                "❤\uFE0F ${filme.nota}"
-            else
-                "\uD83E\uDD0D ${filme.nota}",
-                fontSize = 18.sp,
-                color = corNota)
-        }
+
+            Row(verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(imageVector =
+                if (filme.favorito)
+                    Icons.Filled.Favorite
+                else
+                    Icons.Outlined.FavoriteBorder,
+
+                    contentDescription = "Favorito",
+
+                    modifier = Modifier.clickable(
+                        indication = null, interactionSource = remember { MutableInteractionSource() })
+                    {
+                        onFavoritar()
+                    },
+
+                    tint =
+                    if (filme.favorito)
+                        Color.Red
+                    else
+                        Color.Gray
+                )
+                Text(text = " ${filme.nota}",
+                    fontSize = 18.sp,
+                    color = corNota
+                )
+            }
+            }
     }
 }
 
 @Composable
-fun MovieDetailScreen(filme: Filme, onVoltar: () -> Unit, paddingValues: PaddingValues){
+fun MovieDetailScreen(filme: Filme, onVoltar: () -> Unit, onFavoritar: () -> Unit, paddingValues: PaddingValues){
 
     Column(
         modifier = Modifier.fillMaxWidth().padding(paddingValues).padding(16.dp)
@@ -187,21 +233,19 @@ fun MovieDetailScreen(filme: Filme, onVoltar: () -> Unit, paddingValues: Padding
             },
             fontSize = 18.sp
         )
-    }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+        Text(text =
+        if (filme.favorito)
+            "Remover dos favoritos ❤\uFE0F"
+        else{
+            "Adicionar aos favoritos \uD83E\uDD0D"
+        },
+            fontSize = 18.sp,
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    KotlinParaAndroidTheme {
-        Greeting("Android")
+            modifier = Modifier.padding(top = 16.dp)
+                .clickable{
+                    onFavoritar()
+                }
+        )
     }
 }
