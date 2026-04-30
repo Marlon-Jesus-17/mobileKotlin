@@ -56,9 +56,9 @@ class MainActivity : ComponentActivity() {
 
                 val passouFavorito = !mostrarFavoritos || filme.favorito
 
-                val passouBusca = filme.nome.contains(
+                val passouBusca = filme.nome.contains( //verifica se um texto contém outro texto dentro dele
                     textoBusca,
-                    ignoreCase = true
+                    ignoreCase = true //Ignora diferença entre maiúscula e minúscula
                 )
                 passouFavorito && passouBusca
             }
@@ -102,45 +102,55 @@ class MainActivity : ComponentActivity() {
                         items(listaExibida) { //Recebe a lista de itens
                                 filme ->
 
-                            // Card cria os cards onde as informações ficam dentro
-                            Card(
-                                onClick = { //torna o Card um botão que dispara uma ação quando clicado
+                            MovieCard(filme = filme,
+                                onClick = {
                                     val index = filmes.indexOf(filme)
-                                    filmes[index] = filme.copy(favorito = !filme.favorito)
-                                },
-                                elevation = CardDefaults.cardElevation(6.dp), //Cartão com sombra/destaque (altura visual do cartão)
-                                modifier = Modifier //Controla a aparência/tamanho
-                                    .fillMaxWidth() //Ocupa largura
-                                    .padding(horizontal = 10.dp, vertical = 6.dp) //Tamanho da margem
-                            ) {
-                                //Row organiza os itens horizontalmente, um ao lado do outro
-                                Row(
-                                    modifier = Modifier.fillMaxWidth()
-                                        .padding(16.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween //Joga um item para a esquerda e o outro para a direita, criando um espaço entre eles
-                                ) {
-                                    //Column estrutura os componentes em forma de colunas
-                                    Column(modifier = Modifier.padding(16.dp)) {
-                                        Text(text = filme.nome, fontSize = 20.sp)
-                                        Text(text = "Filme avaliado")
-                                    }
-                                    val corNota = when{
-                                        filme.nota >= 9 -> Color.Green
-                                        filme.nota >= 8 -> Color.Yellow
-                                        else -> Color.Red
-                                    }
-                                    Text(text = if (filme.favorito)
-                                        "❤\uFE0F ${filme.nota}"
-                                    else
-                                        "\uD83E\uDD0D ${filme.nota}",
-                                        fontSize = 18.sp,
-                                        color = corNota)
+                                    filmes[index] = filme.copy(
+                                        favorito = !filme.favorito
+                                    )
                                 }
-                            }
+                            )
                         }
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun MovieCard(filme: Filme, onClick: () -> Unit){
+
+    // Card cria os cards onde as informações ficam dentro
+    Card(
+        onClick = onClick, //torna o Card um botão que dispara uma ação quando clicado
+        elevation = CardDefaults.cardElevation(6.dp), //Cartão com sombra/destaque (altura visual do cartão)
+        modifier = Modifier //Controla a aparência/tamanho
+            .fillMaxWidth() //Ocupa largura
+            .padding(horizontal = 10.dp, vertical = 6.dp) //Tamanho da margem
+    ) {
+        //Row organiza os itens horizontalmente, um ao lado do outro
+        Row(
+            modifier = Modifier.fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween //Joga um item para a esquerda e o outro para a direita, criando um espaço entre eles
+        ) {
+            //Column estrutura os componentes em forma de colunas
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(text = filme.nome, fontSize = 20.sp)
+                Text(text = "Filme avaliado")
+            }
+            val corNota = when{
+                filme.nota >= 9 -> Color.Green
+                filme.nota >= 8 -> Color.Yellow
+                else -> Color.Red
+            }
+            Text(text = if (filme.favorito)
+                "❤\uFE0F ${filme.nota}"
+            else
+                "\uD83E\uDD0D ${filme.nota}",
+                fontSize = 18.sp,
+                color = corNota)
         }
     }
 }
